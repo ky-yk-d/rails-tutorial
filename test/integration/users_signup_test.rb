@@ -9,7 +9,7 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
           name: "",
           email: "user@invalid",
           password: "foo",
-          password: "bar"
+          password_confirmation: "bar"
         }
       }
     end
@@ -17,4 +17,23 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     assert_select 'div#error_explanation'
     assert_select 'div.alert'
   end
+
+  test "valid signup information" do
+    get signup_path
+    assert_difference 'User.count', 1 do
+      post users_path, params: {
+        user: {
+          name: "Carl Popper",
+          email: "cpopper@example.com",
+          password: "foobar",
+          password_confirmation: "foobar"
+        }
+      }
+    end
+    follow_redirect!
+    assert_template 'users/show'
+    assert_select 'div.alert'
+    assert_not flash.empty?
+  end
+
 end
